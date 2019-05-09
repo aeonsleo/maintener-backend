@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\MaintenanceTransaction;
 use Illuminate\Http\Request;
+use App\Maintenance;
 
 class MaintenanceTransactionController extends Controller
 {
@@ -12,9 +13,10 @@ class MaintenanceTransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Maintenance $maintenance)
     {
-        //
+        // dd($maintenance->transactions());
+        return $maintenance->transactions;
     }
 
     /**
