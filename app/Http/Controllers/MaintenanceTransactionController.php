@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\MaintenanceTransaction;
 use Illuminate\Http\Request;
 use App\Maintenance;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\MaintenanceTransactionRequest;
+use Illuminate\Http\Response;
 
 class MaintenanceTransactionController extends Controller
 {
@@ -15,8 +18,9 @@ class MaintenanceTransactionController extends Controller
      */
     public function index(Maintenance $maintenance)
     {
-        // dd($maintenance->transactions());
-        return $maintenance->transactions;
+        if($maintenance->user_id === Auth::user()->id) {
+           return $maintenance->transactions;
+        }
     }
 
     /**
@@ -35,9 +39,21 @@ class MaintenanceTransactionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MaintenanceTransactionRequest $request, Maintenance $maintenance)
     {
-        //
+        $maintenanceTransaction = new MaintenanceTransaction();
+        $maintenanceTransaction->maintenance_id = $maintenance->id;
+        $maintenanceTransaction->scheduled_date = $request->scheduled_date;
+        $maintenanceTransaction->transaction_date = $request->transaction_date;
+        $maintenanceTransaction->amount = $request->amount;
+        $maintenanceTransaction->save();
+
+        return response(
+            [
+                'data' => $maintenanceTransaction
+            ], 
+            Response::HTTP_CREATED
+        );
     }
 
     /**

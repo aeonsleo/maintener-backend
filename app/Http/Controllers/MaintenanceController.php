@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Maintenance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\MaintenanceRequest;
+use Illuminate\Http\Response;
 
 class MaintenanceController extends Controller
 {
@@ -14,7 +17,9 @@ class MaintenanceController extends Controller
      */
     public function index()
     {
-        return Maintenance::all();
+        $user = \App\User::whereId(Auth::user()->id)->first();
+        
+        return $user->maintenances;
     }
 
     /**
@@ -33,9 +38,21 @@ class MaintenanceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MaintenanceRequest $request)
     {
-        //
+        $maintenance = New Maintenance();
+        $maintenance->user_id = Auth::user()->id;
+        $maintenance->name = $request->name;
+        $maintenance->frequency = $request->frequency;
+        $maintenance->description = $request->description;
+        $maintenance->save();
+
+        return response(
+            [
+                'data' => $maintenance
+            ], 
+            Response::HTTP_CREATED
+        );
     }
 
     /**
